@@ -3,11 +3,20 @@ import {
   TouchableOpacityProps,
   Text,
   View,
+  Pressable,
+  PressableProps,
 } from 'react-native'
-import { useSharedValue } from 'react-native-reanimated'
+
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolateColor,
+} from 'react-native-reanimated'
 
 import { THEME } from '../../styles/theme'
 import { styles } from './styles'
+import { useEffect } from 'react'
 
 const TYPE_COLORS = {
   EASY: THEME.COLORS.BRAND_LIGHT,
@@ -15,7 +24,7 @@ const TYPE_COLORS = {
   MEDIUM: THEME.COLORS.WARNING_LIGHT,
 }
 
-type Props = TouchableOpacityProps & {
+type Props = PressableProps & {
   title: string
   isChecked?: boolean
   type?: keyof typeof TYPE_COLORS
@@ -27,28 +36,56 @@ export function Level({
   isChecked = false,
   ...rest
 }: Props) {
+  const scale = useSharedValue(1)
+  const checked = useSharedValue(1)
+
   const COLOR = TYPE_COLORS[type]
 
+  const animatedContainerStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    backgroundColor: interpolateColor(
+      checked.value,
+      [0, 1],
+      ['transparent', COLOR],
+    ),
+  }))
+
+  const animatedTextStyle = useAnimatedStyle(() => ({
+    color: interpolateColor(
+      checked.value,
+      [0, 1],
+      [COLOR, THEME.COLORS.GREY_100],
+    ),
+  }))
+
+  function OnPressIn() {
+    scale.value = withTiming(1.1)
+  }
+
+  function OnPressOut() {
+    scale.value = withTiming(1)
+  }
+
+  useEffect(() => {
+    checked.value = withTiming(isChecked ? 1 : 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isChecked])
+
   return (
-    <TouchableOpacity {...rest}>
-      <View
+    <Pressable onPressIn={OnPressIn} onPressOut={OnPressOut} {...rest}>
+      <Animated.View
         style={[
           styles.container,
+          animatedContainerStyle,
           {
             borderColor: COLOR,
-            backgroundColor: isChecked ? COLOR : 'transparent',
           },
         ]}
       >
-        <Text
-          style={[
-            styles.title,
-            { color: isChecked ? THEME.COLORS.GREY_100 : COLOR },
-          ]}
-        >
+        <Animated.Text style={[styles.title, animatedTextStyle]}>
           {title}
-        </Text>
-      </View>
-    </TouchableOpacity>
+        </Animated.Text>
+      </Animated.View>
+    </Pressable>
   )
 }
