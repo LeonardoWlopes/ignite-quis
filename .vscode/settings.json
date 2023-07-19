@@ -1,6 +1,9 @@
 {
     "editor.formatOnSave": false,
     "cSpell.words": [
-        "Pressable"
+        "Pressable",
+        "springify",
+        "swipeable",
+        "Swipeable"
     ]
 }
