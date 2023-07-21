@@ -1,8 +1,8 @@
-import { View, Text, Dimensions } from 'react-native'
+import { Dimensions, Text } from 'react-native'
+import Animated, { Keyframe, runOnJS } from 'react-native-reanimated'
 
 import { Option } from '../Option'
 import { styles } from './styles'
-import Animated, { Keyframe, runOnJS } from 'react-native-reanimated'
 
 type QuestionProps = {
   title: string
@@ -29,7 +29,9 @@ export function Question({
       opacity: 0,
       transform: [{ translateX: SCREEN_WIDTH }, { rotate: '90deg' }],
     },
-    70: { opacity: 0.3 },
+    70: {
+      opacity: 0.3,
+    },
     100: {
       opacity: 1,
       transform: [{ translateX: 0 }, { rotate: '0deg' }],
@@ -37,7 +39,10 @@ export function Question({
   })
 
   const exitingKeyFrame = new Keyframe({
-    from: { opacity: 1, transform: [{ translateX: 0 }, { rotate: '0deg' }] },
+    from: {
+      opacity: 1,
+      transform: [{ translateX: 0 }, { rotate: '0deg' }],
+    },
     to: {
       opacity: 0,
       transform: [{ translateX: SCREEN_WIDTH * -1 }, { rotate: '-90deg' }],
@@ -46,12 +51,14 @@ export function Question({
 
   return (
     <Animated.View
+      style={styles.container}
       entering={enteringKeyFrame.duration(400)}
       exiting={exitingKeyFrame.duration(400).withCallback((finished) => {
         'worklet'
-        if (finished) runOnJS(onUnmount)()
+        if (finished) {
+          runOnJS(onUnmount)
+        }
       })}
-      style={styles.container}
     >
       <Text style={styles.title}>{question.title}</Text>
 

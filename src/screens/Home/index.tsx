@@ -67,8 +67,8 @@ export function Home() {
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (
           <QuizCard
-            index={index}
             data={item}
+            index={index}
             onPress={() => navigate('quiz', { id: item.id })}
           />
         )}

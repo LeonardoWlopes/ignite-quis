@@ -1,20 +1,21 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { View, ScrollView, Alert } from 'react-native'
 import { HouseLine, Trash } from 'phosphor-react-native'
-
-import { Header } from '../../components/Header'
-import { HistoryCard, HistoryProps } from '../../components/HistoryCard'
-
-import { styles } from './styles'
-import { historyGetAll, historyRemove } from '../../storage/quizHistoryStorage'
-import { Loading } from '../../components/Loading'
 import Animated, {
   Layout,
   SlideInRight,
   SlideOutRight,
 } from 'react-native-reanimated'
 import { Swipeable } from 'react-native-gesture-handler'
+
+import { historyGetAll, historyRemove } from '../../storage/quizHistoryStorage'
+
+import { Header } from '../../components/Header'
+import { HistoryCard, HistoryProps } from '../../components/HistoryCard'
+import { Loading } from '../../components/Loading'
+
+import { styles } from './styles'
 import { THEME } from '../../styles/theme'
 
 export function History() {
@@ -23,7 +24,7 @@ export function History() {
 
   const { goBack } = useNavigation()
 
-  const swipeableRefs = useRef<Swipeable[]>([])
+  const swipeableRef = useRef<Swipeable[]>([])
 
   async function fetchHistory() {
     const response = await historyGetAll()
@@ -38,6 +39,8 @@ export function History() {
   }
 
   function handleRemove(id: string, index: number) {
+    swipeableRef.current?.[index].close()
+
     Alert.alert('Remover', 'Deseja remover esse registro?', [
       {
         text: 'Sim',
@@ -45,8 +48,6 @@ export function History() {
       },
       { text: 'Não', style: 'cancel' },
     ])
-
-    swipeableRefs.current?.[index].close()
   }
 
   useEffect(() => {
@@ -79,15 +80,17 @@ export function History() {
           >
             <Swipeable
               ref={(ref) => {
-                ref && swipeableRefs.current.push(ref)
+                if (ref) {
+                  swipeableRef.current.push(ref)
+                }
               }}
               overshootLeft={false}
-              containerStyle={styles.SwipeableContainer}
-              onSwipeableOpen={() => handleRemove(item.id, index)}
+              containerStyle={styles.swipeableContainer}
               leftThreshold={10}
               renderRightActions={() => null}
+              onSwipeableOpen={() => handleRemove(item.id, index)}
               renderLeftActions={() => (
-                <View style={styles.SwipeableRemove}>
+                <View style={styles.swipeableRemove}>
                   <Trash size={32} color={THEME.COLORS.GREY_100} />
                 </View>
               )}

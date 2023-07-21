@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { HistoryProps } from '../components/HistoryCard'
 import { Alert } from 'react-native'

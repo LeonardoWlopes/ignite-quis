@@ -1,5 +1,4 @@
-import { Canvas, Rect, BlurMask } from '@shopify/react-native-skia'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useWindowDimensions } from 'react-native'
 import Animated, {
   Easing,
@@ -8,6 +7,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated'
+import { Canvas, Rect, BlurMask } from '@shopify/react-native-skia'
 import { THEME } from '../../styles/theme'
 
 const STATUS = [
@@ -16,20 +16,22 @@ const STATUS = [
   THEME.COLORS.DANGER_LIGHT,
 ]
 
-interface Props {
+type Props = {
   status: number
 }
 
 export function OverlayFeedback({ status }: Props) {
-  const color = STATUS[status]
+  const opacity = useSharedValue(0)
 
   const { height, width } = useWindowDimensions()
 
-  const opacity = useSharedValue(0)
+  const styleAnimated = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    }
+  })
 
-  const styledAnimated = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }))
+  const color = STATUS[status]
 
   useEffect(() => {
     opacity.value = withSequence(
@@ -41,11 +43,11 @@ export function OverlayFeedback({ status }: Props) {
 
   return (
     <Animated.View
-      style={[{ height, width, position: 'absolute' }, styledAnimated]}
+      style={[{ width, height, position: 'absolute' }, styleAnimated]}
     >
       <Canvas style={{ flex: 1 }}>
         <Rect x={0} y={0} width={width} height={height} color={color}>
-          <BlurMask blur={50} style={'inner'} />
+          <BlurMask blur={50} style="inner" />
         </Rect>
       </Canvas>
     </Animated.View>

@@ -1,6 +1,5 @@
-/* eslint-disable import/no-duplicates */
 /* eslint-disable camelcase */
-import 'react-native-gesture-handler'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import { StatusBar } from 'react-native'
 import {
@@ -11,7 +10,6 @@ import {
 
 import { Routes } from './src/routes'
 import { Loading } from './src/components/Loading'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_700Bold })
